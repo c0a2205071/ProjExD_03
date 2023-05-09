@@ -143,6 +143,27 @@ class Beam:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
+class Explosion:
+    def __init__(self, bombs : Bomb, num):
+        self._img = pg.image.load(f"ex03/fig/explosion.gif")
+        self._imgs = [self._img, pg.transform.flip(self._img, True, True)]
+        self._rct = self._img.get_rect()
+        self._rct.center = bombs._rct.center
+        self.explosion_life = num
+
+    def update(self, screen):
+        self.explosion_life -= 1
+        for i in range(self.explosion_life):
+            if i%2 == 0:
+                screen.blit(self._imgs[0], self._rct)
+            if i%2 == 1:
+                screen.blit(self._imgs[1], self._rct)
+
+    def get_life(self):
+        return self.explosion_life
+
+
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -153,6 +174,8 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    exps: list[Explosion] = list()
+
 
     tmr = 0
     while True:
@@ -174,19 +197,26 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
+
+            if beam is not None:  # ビームが存在しているとき
+                beam.update(screen)
+                for i, bomb in enumerate(bombs):
+                    if beam._rct.colliderect(bomb._rct):
+                        exps.append(Explosion(bomb, 1200))
+                        beam = None
+                        del bombs[i]
+                        bird.change_img(6, screen)
+                        break
+        
+        for i , exp in enumerate(exps):
+            exp.update(screen)
+            if exp.get_life() <= 0:
+                del exps[i]
             
+        
+
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-
-        if beam is not None:  # ビームが存在しているとき
-            beam.update(screen)
-            for i, bomb in enumerate(bombs):
-                if beam._rct.colliderect(bomb._rct):
-                    beam = None
-                    del bombs[i]
-                    bird.change_img(6, screen)
-                    break
-
         pg.display.update()
         clock.tick(1000)
 
