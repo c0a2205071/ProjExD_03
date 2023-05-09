@@ -231,7 +231,6 @@ def main():
         pg.display.update()
         clock.tick(1000)
 
-
 if __name__ == "__main__":
     pg.init()
     main()
