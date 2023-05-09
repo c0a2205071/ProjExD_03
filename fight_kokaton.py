@@ -211,7 +211,7 @@ def main():
                         beam = None
                         score+=1
                         if (score == NUM_OF_BOMBS):
-                            txt2 = fonto2.render("Congratulation!!", True, (255, 0, 0)) # 課題5
+                            txt2 = fonto2.render("GG", True, (255, 0, 0)) # 課題5
                             screen.blit(txt2, [400, 400]) # 課題5
                             pg.display.update() # 課題5
                             time.sleep(1) # 課題5
