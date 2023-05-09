@@ -143,7 +143,10 @@ class Beam:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
-class Explosion:
+class Explosion:  # 追加課題１ 
+    """
+    爆発に関するクラス
+    """
     def __init__(self, bombs : Bomb, num):
         self._img = pg.image.load(f"ex03/fig/explosion.gif")
         self._imgs = [self._img, pg.transform.flip(self._img, True, True)]
@@ -170,10 +173,12 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     clock = pg.time.Clock()
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
-
+    fonto  = pg.font.Font(None, 80) #課題3
+    fonto2  = pg.font.Font(None, 80) #課題5
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    score = 0 #課題3
     exps: list[Explosion] = list()
 
 
@@ -202,19 +207,25 @@ def main():
                 beam.update(screen)
                 for i, bomb in enumerate(bombs):
                     if beam._rct.colliderect(bomb._rct):
-                        exps.append(Explosion(bomb, 1200))
+                        exps.append(Explosion(bomb, 1200))  # 追加課題１ 
                         beam = None
+                        score+=1
+                        if (score == NUM_OF_BOMBS):
+                            txt2 = fonto2.render("Congratulation!!", True, (255, 0, 0)) # 課題5
+                            screen.blit(txt2, [400, 400]) # 課題5
+                            pg.display.update() # 課題5
+                            time.sleep(1) # 課題5
                         del bombs[i]
                         bird.change_img(6, screen)
                         break
-        
-        for i , exp in enumerate(exps):
-            exp.update(screen)
-            if exp.get_life() <= 0:
-                del exps[i]
-            
-        
 
+            txt = fonto.render(str(score), True, (0, 0, 0)) # 課題3
+            screen.blit(txt, [300, 200]) # 課題3
+        for i , exp in enumerate(exps):  # 追加課題１ 
+            exp.update(screen)  # 追加課題１ 
+            if exp.get_life() <= 0:  # 追加課題１ 
+                del exps[i]  # 追加課題１ 
+            
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         pg.display.update()
